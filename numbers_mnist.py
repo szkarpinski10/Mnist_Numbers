@@ -86,3 +86,15 @@ Model_0=MNIST_Model().to(device)
 loss_fn=nn.CrossEntropyLoss()
 optimizer=optim.Adam(params=Model_0.parameters(),lr=0.001)
 
+def learning_loop(Model_0, dataloader, loss_fn,optimizer):
+    train_loss=0
+    Model_0.train()
+    for batch,(X,y) in enumerate(dataloader):
+        y_preds=Model_0(X)
+        loss=loss_fn(y_preds,y)
+        train_loss+=loss.item()
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        return train_loss/len(dataloader)
