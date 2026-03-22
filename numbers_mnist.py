@@ -121,6 +121,3 @@ for epoch in range(EPOCHS):
     test_loss, test_acc=test_loop(Model_0,test_dataloader,loss_fn)
     print(f"Epoch: {epoch+1} | train loss: {training_loss:.4f} | test loss: {test_loss:.4f} | accuracy: {test_acc:.2f}%")
 
-
-# Wykresy
-fig, axes = plt.subplots(1, 2, figsize=(12, 4))
