@@ -86,15 +86,41 @@ Model_0=MNIST_Model().to(device)
 loss_fn=nn.CrossEntropyLoss()
 optimizer=optim.Adam(params=Model_0.parameters(),lr=0.001)
 
-def learning_loop(Model_0, dataloader, loss_fn,optimizer):
+def learning_loop(model, dataloader, loss_fn,optimizer):
     train_loss=0
-    Model_0.train()
+    model.train()
     for batch,(X,y) in enumerate(dataloader):
-        y_preds=Model_0(X)
+        X,y=X.to(device), y.to(device)
+        y_preds=model(X)
         loss=loss_fn(y_preds,y)
         train_loss+=loss.item()
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
 
-        return train_loss/len(dataloader)
+    return train_loss/len(dataloader)
+
+def test_loop(model,dataloader,loss_fn):
+    test_loss=0
+    correct=0
+    model.eval()
+    with torch.no_grad():
+        for X,y in dataloader:
+            X,y=X.to(device),y.to(device)
+            y_preds=model(X)
+            test_loss+=loss_fn(y_preds,y).item()
+            correct+=(y_preds.argmax(dim=1)==y).sum().item()
+    
+    accuracy=correct/len(dataloader.dataset)*100
+    return test_loss/len(dataloader),accuracy
+
+EPOCHS=9
+
+for epoch in range(EPOCHS):
+    training_loss=learning_loop(Model_0,train_dataloader,loss_fn,optimizer)
+    test_loss, test_acc=test_loop(Model_0,test_dataloader,loss_fn)
+    print(f"Epoch: {epoch+1} | train loss: {training_loss:.4f} | test loss: {test_loss:.4f} | accuracy: {test_acc:.2f}%")
+
+
+# Wykresy
+fig, axes = plt.subplots(1, 2, figsize=(12, 4))
